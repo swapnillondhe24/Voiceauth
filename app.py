@@ -15,7 +15,7 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 # Set upload folder and allowed extensions for file uploads
 app.config['UPLOAD_FOLDER'] = './uploads'
-app.config['ALLOWED_EXTENSIONS'] = {'wav', 'flac'}
+app.config['ALLOWED_EXTENSIONS'] = {'wav', 'flac','.webm'}
 
 def allowed_file(filename):
     """Check if a file has an allowed extension
@@ -25,33 +25,37 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
 
+from pydub import AudioSegment
+
 @app.route('/enroll', methods=['POST'])
 def enroll():
     """Enroll a user with an audio file
     inputs: str (Name of the person to be enrolled and registered)
-            file (Audio file of the person to enroll)
+            file (Audio file of the person to enroll in .webm format)
     outputs: None"""
-    
+
     # Check if the name and audio file are included in the request
     if 'name' not in request.form or 'audio' not in request.files:
         return jsonify({'error': 'Name and audio file are required.'}), 400
 
     name = request.form['name']
     audio_file = request.files['audio']
-    
+
     # Check if the file has an allowed extension
     if not allowed_file(audio_file.filename):
         return jsonify({'error': 'Audio file must be in WAV or FLAC format.'}), 400
-    
-    # Save the audio file to the server
-    audio_filename = secure_filename(name) + '.' + audio_file.filename.rsplit('.', 1)[1].lower()
-    audio_file.save(os.path.join(app.config['UPLOAD_FOLDER'], audio_filename))
-    print(os.path.join(app.config['UPLOAD_FOLDER'], audio_filename))
+
+    # Convert .webm to .wav format
+    audio = AudioSegment.from_file(audio_file, format="webm")
+    wav_filename = secure_filename(name) + '.wav'
+    wav_path = os.path.join(app.config['UPLOAD_FOLDER'], wav_filename)
+    audio.export(wav_path, format="wav")
+
     # Enroll the user with the audio file
-    result = prediction.enroll(name, os.path.join(app.config['UPLOAD_FOLDER'], audio_filename))
-    print(result)
-    
+    result = prediction.enroll(name, wav_path)
+
     return jsonify({'result': result})
+
 
 
 @app.route('/recognize', methods=['POST'])

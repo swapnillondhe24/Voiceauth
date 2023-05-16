@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Recognize Voice</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      $(document).ready(function() {
+        $("#voice-form").on("submit", function(e) {
+          e.preventDefault();
+          var form = $(this)[0];
+          var formData = new FormData(form);
+          $.ajax({
+            type: "POST",
+            url: "http://127.0.0.1:5000/recognize",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+              $("#response").text(response);
+            },
+            error: function(xhr, status, error) {
+              console.log(error);
+            }
+          });
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <h1>Recognize Voice</h1>
+    <form id="voice-form" enctype="multipart/form-data">
+      <label for="audio">Audio file (.wav or .flac):</label>
+      <input type="file" name="audio" id="audio" accept=".wav,.flac" required><br><br>
+      <input type="submit" value="Recognize Voice">
+    </form>
+    <h1><div id="response"></div></h1>
+  </body>
+</html>

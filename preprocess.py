@@ -16,8 +16,7 @@ def normalize_frames(m,epsilon=1e-12):
     return np.array([(v - np.mean(v)) / max(np.std(v),epsilon) for v in m])
 
 
-# Valuable dc and dither removal function implemented 
-# https://github.com/christianvazquez7/ivector/blob/master/MSRIT/rm_dc_n_dither.m
+
 def remove_dc_and_dither(sin, sample_rate):
     if sample_rate == 16e3:
         alpha = 0.99

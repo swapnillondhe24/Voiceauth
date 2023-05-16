@@ -29,8 +29,11 @@ def buckets(max_time, steptime, frameskip):
 
 
 def get_embedding(model, wav_file, max_time):
+    # print("Loading model weights from in embedding....")
     buckets_var = buckets(p.MAX_SEC, p.BUCKET_STEP, p.FRAME_STEP)
+    # print("Processing enroll sample  in embedding....")
     signal = get_fft_spectrum(wav_file, buckets_var)
+    # print("Enroll sample processed  in embedding.")
     embedding = np.squeeze(model.predict(signal.reshape(1,*signal.shape,1)))
     return embedding
 

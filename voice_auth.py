@@ -100,7 +100,7 @@ def recognize(file):
     
     if os.path.exists(p.EMBED_LIST_FILE):
         embeds = os.listdir(p.EMBED_LIST_FILE)
-    if len(embeds) is 0:
+    if len(embeds) == 0:
         print("No enrolled users found")
         exit()
     print("Loading model weights from [{}]....".format(p.MODEL_FILE))

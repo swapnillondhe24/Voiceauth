@@ -15,7 +15,7 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 # Set upload folder and allowed extensions for file uploads
 app.config['UPLOAD_FOLDER'] = './uploads'
-app.config['ALLOWED_EXTENSIONS'] = {'wav', 'flac','.webm'}
+app.config['ALLOWED_EXTENSIONS'] = {'wav', 'flac','webm','ogg'}
 
 def allowed_file(filename):
     """Check if a file has an allowed extension
@@ -44,15 +44,26 @@ def enroll():
     # Check if the file has an allowed extension
     if not allowed_file(audio_file.filename):
         return jsonify({'error': 'Audio file must be in WAV or FLAC format.'}), 400
+    
+    # Save the audio file to the server
+    audio_filename = secure_filename(name) + '.' + audio_file.filename.rsplit('.', 1)[1].lower()
+    audio_file.save(os.path.join(app.config['UPLOAD_FOLDER'], audio_filename))
 
-    # Convert .webm to .wav format
-    audio = AudioSegment.from_file(audio_file, format="webm")
-    wav_filename = secure_filename(name) + '.wav'
-    wav_path = os.path.join(app.config['UPLOAD_FOLDER'], wav_filename)
-    audio.export(wav_path, format="wav")
 
+    # Convert the audio file to WAV format
+    import moviepy.editor as moviepy
+    audio_filename2 = audio_filename.replace(".webm",".wav")
+    audio_filename2 = audio_filename.replace(".ogg",".wav")
+
+    audio = AudioSegment.from_file(os.path.join(app.config['UPLOAD_FOLDER'], audio_filename))
+    audio.export(os.path.join(app.config['UPLOAD_FOLDER'], audio_filename2), format="wav")
+
+    
+
+    print(os.path.join(app.config['UPLOAD_FOLDER'], audio_filename2))
     # Enroll the user with the audio file
-    result = prediction.enroll(name, wav_path)
+    result = prediction.enroll(name, os.path.join(app.config['UPLOAD_FOLDER'], audio_filename2))
+    print(result)
 
     return jsonify({'result': result})
 
@@ -85,7 +96,7 @@ def recognize():
     if result['Recognized'] == name:
         return jsonify({'result': "Success", 'name': result}),200
     else:
-        return jsonify({'result': "Failure"}),401
+        return jsonify({'result': "Unauthorized"}),401
     
 
 

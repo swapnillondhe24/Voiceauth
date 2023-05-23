@@ -55,6 +55,7 @@ def enroll():
     audio_filename2 = audio_filename.replace(".webm",".wav")
     audio_filename2 = audio_filename.replace(".ogg",".wav")
 
+    print(os.path.join(app.config['UPLOAD_FOLDER'], audio_filename))
     audio = AudioSegment.from_file(os.path.join(app.config['UPLOAD_FOLDER'], audio_filename))
     audio.export(os.path.join(app.config['UPLOAD_FOLDER'], audio_filename2), format="wav")
 

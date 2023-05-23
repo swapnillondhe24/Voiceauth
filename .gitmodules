@@ -1,0 +1,3 @@
+[submodule "voice-auth"]
+	path = voice-auth
+	url = https://github.com/adarsh45/voice-auth

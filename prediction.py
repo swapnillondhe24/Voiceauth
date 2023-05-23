@@ -19,8 +19,7 @@ logging.getLogger('tensorflow').setLevel(logging.FATAL)
 
 
 #IMPORT USER-DEFINED FUNCTIONS
-from feature_extraction import get_embedding, get_embeddings_from_list_file
-from preprocess import get_fft_spectrum
+from feature_extraction import get_embedding
 import parameters as p
 
 
